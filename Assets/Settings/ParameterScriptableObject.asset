@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49071c5fb85f0445928c8ae174a28b2, type: 3}
+  m_Name: ParameterScriptableObject
+  m_EditorClassIdentifier: 
+  mCameraParameter:
+    DampingLinear: 32
+    DampingAngular: 48
+    LinearSpring: 100
+    AngularSpring: 64
+  mFighterParameter:
+    DampingLinear: 10
+    DampingAngular: 20
+    ForwardImpulse: 200000
+    YawImpulse: 6000
+    PitchImpulse: 4000
+    RollImpulse: 2000
+    PitchStability: 5000
+    RollStability: 10000
+    GroundAvoidance: 75000
+    TowardSpringTorqueRatio: 20000
+    BulletVelocity: 64

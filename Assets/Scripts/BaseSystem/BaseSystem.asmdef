@@ -1,0 +1,22 @@
+{
+    "name": "MyBaseSystemScripts",
+    "references": [
+        "Unity.Transforms",
+        "Unity.Collections",
+        "Unity.Burst",
+        "Unity.Jobs",
+        "Unity.Mathematics",
+        "Unity.Mathematics.Extensions",
+        "Unity.Entities",
+        "Unity.Entities.Hybrid",
+        "Unity.Rendering.Hybrid",
+        "Unity.Physics",
+        "Unity.Physics.Hybrid"
+	],
+    "optionalUnityReferences": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "autoReferenced": true,
+    "includePlatforms": [],
+    "excludePlatforms": []
+}
