@@ -170,6 +170,7 @@ public class BeamCollisionSystem : JobComponentSystem
         [ReadOnly] public ArchetypeChunkEntityType EntityType;
         [ReadOnly] public ArchetypeChunkComponentType<CollisionInfoComponent> InfoType;
         [ReadOnly] public ArchetypeChunkComponentType<BeamComponent> BeamType;
+        public float Time;
 
         public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
         {
@@ -186,7 +187,7 @@ public class BeamCollisionSystem : JobComponentSystem
                     ref var beam = ref chunkBeams.AsReadOnlyRef(i);
                     SparkSystem.Instantiate(CommandBuffer, 0 /* jobIndex */,
                                             SparkPrefabEntity,
-                                            info.Position, info.Normal, beam.ColorBitPattern);
+                                            info.Position, info.Normal, beam.ColorBitPattern, Time);
                 }
             }
         }
@@ -200,6 +201,7 @@ public class BeamCollisionSystem : JobComponentSystem
             EntityType = GetArchetypeChunkEntityType(),
             InfoType = GetArchetypeChunkComponentType<CollisionInfoComponent>(),
             BeamType = GetArchetypeChunkComponentType<BeamComponent>(),
+            Time = (float)UTJ.Time.GetCurrent(),
         };
         handle = job.Schedule(_query, handle);
         _entityCommandBufferSystem.AddJobHandleForProducer(handle);

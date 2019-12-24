@@ -20,7 +20,8 @@ public class TestDistortion : MonoBehaviour
                                          DistortionManager.Prefab,
                                          pos,
                                          10f /* period */,
-                                         1f /* size */);
+                                         1f /* size */,
+                                         Time.GetCurrent());
         }
     }
 

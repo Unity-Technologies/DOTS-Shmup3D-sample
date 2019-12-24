@@ -283,8 +283,9 @@ public class FighterSystem : JobComponentSystem
                 {
                     float minDist = float.MaxValue;
                     Entity targetEntity = Entity.Null;
-                    foreach (var entity in TargetableArray)
+                    for (var j = 0; j < TargetableArray.Length; ++j)
                     {
+                        var entity = TargetableArray[j];
                         if (TargetableTranslations.Exists(entity)) {
                             var pos = TargetableTranslations[entity].Value;
                             var len2 = math.lengthsq(pos - translation);
@@ -464,13 +465,15 @@ public class FighterSystem : JobComponentSystem
                                                  DistortionPrefabEntity,
                                                  math.mul(rotation, FighterConfig.BurnerLeft) + translation,
                                                  0.2f /* period */,
-                                                 1f /* size */);
+                                                 1f /* size */,
+                                                 Time);
                     DistortionSystem.Instantiate(CommandBuffer,
                                                  chunkIndex /* jobIndex */,
                                                  DistortionPrefabEntity,
                                                  math.mul(rotation, FighterConfig.BurnerRight) + translation,
                                                  0.2f /* period */,
-                                                 1f /* size */);
+                                                 1f /* size */,
+                                                 Time);
                 }
 
 

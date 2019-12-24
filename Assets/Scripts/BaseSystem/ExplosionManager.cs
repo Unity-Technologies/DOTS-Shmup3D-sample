@@ -38,7 +38,7 @@ public class ExplosionManager : MonoBehaviour, IDeclareReferencedPrefabs, IConve
 public class ExplosionSystem : JobComponentSystem
 {
     static Entity _prefabEntity;
-    static Random _random = new Random();
+    public static Entity PrefabEntity { get { return _prefabEntity; } }
 
     EntityQuery _query;
     NativeList<Matrix4x4> _batchMatrices;
@@ -48,18 +48,18 @@ public class ExplosionSystem : JobComponentSystem
     public static void Initialize(Entity prefabEntity)
     {
         _prefabEntity = prefabEntity;
-        _random.InitState(12345);
     }
 
-	public static Entity Instantiate(EntityCommandBuffer.Concurrent ecb, int jobIndex, float3 pos)
+	public static Entity Instantiate(EntityCommandBuffer.Concurrent ecb, int jobIndex, float3 pos, Entity prefab, float time)
 	{
-		var entity = ecb.Instantiate(jobIndex, _prefabEntity);
-		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = (float)UTJ.Time.GetCurrent(), Period = 1f, });
+		var entity = ecb.Instantiate(jobIndex, prefab);
+		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = time, Period = 1f, });
 
         var rot = quaternion.identity;
         var mat = new float4x4(rot, pos);
-        mat.c0.w = UTJ.Time.GetCurrent();
-        var rotZ = _random.NextFloat() * math.PI * 2f;
+        mat.c0.w = time;
+        var random = new Random((uint)pos.GetHashCode());
+        var rotZ = random.NextFloat() * math.PI * 2f;
         mat.c1.w = rotZ;
 		ecb.SetComponent(jobIndex, entity, new ExplosionComponent { Matrix = mat, });
         return entity;
@@ -77,7 +77,8 @@ public class ExplosionSystem : JobComponentSystem
         var rot = quaternion.identity;
         var mat = new float4x4(rot, pos);
         mat.c0.w = UTJ.Time.GetCurrent();
-        var rotZ = _random.NextFloat() * math.PI * 2f;
+        var random = new Random((uint)pos.GetHashCode());
+        var rotZ = random.NextFloat() * math.PI * 2f;
         mat.c1.w = rotZ;
 		entityManager.SetComponentData(entity, new ExplosionComponent { Matrix = mat, });
         return entity;

@@ -70,7 +70,9 @@ public class MissileCollisionSystem : JobComponentSystem
         [ReadOnly] public ArchetypeChunkEntityType EntityType;
         [ReadOnly] public ArchetypeChunkComponentType<Translation> TranslationType;
         [ReadOnly] public ArchetypeChunkComponentType<CollisionInfoComponent> InfoType;
-        
+        public Entity ExplosionPrefab;
+        public float Time;
+
         public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
         {
             var entities = chunk.GetNativeArray(EntityType);
@@ -83,7 +85,7 @@ public class MissileCollisionSystem : JobComponentSystem
                     var entity = entities[i];
                     CommandBuffer.DestroyEntity(chunkIndex, entity);
                     ref var translation = ref chunkTranslations.AsReadOnlyRef(i);
-                    ExplosionSystem.Instantiate(CommandBuffer, chunkIndex /* jobIndex */, translation.Value);
+                    ExplosionSystem.Instantiate(CommandBuffer, chunkIndex /* jobIndex */, translation.Value, ExplosionPrefab, Time);
                 }
             }
         }
@@ -97,6 +99,8 @@ public class MissileCollisionSystem : JobComponentSystem
             EntityType = GetArchetypeChunkEntityType(),
             TranslationType = GetArchetypeChunkComponentType<Translation>(true /* isReadOnly */),
             InfoType = GetArchetypeChunkComponentType<CollisionInfoComponent>(true /* isReadOnly */),
+            ExplosionPrefab = ExplosionSystem.PrefabEntity,
+            Time = (float)UTJ.Time.GetCurrent(),
         };
         handle = job.Schedule(_query, handle);
         _entityCommandBufferSystem.AddJobHandleForProducer(handle);
@@ -174,6 +178,7 @@ public class MissileSystem : JobComponentSystem
         [ReadOnly] public ArchetypeChunkComponentType<PhysicsMass> PhysicsMassType;
         [ReadOnly] public ArchetypeChunkComponentType<MissileComponent> MissileType;
         [ReadOnly] public ArchetypeChunkComponentType<AlivePeriod> AlivePeriodType;
+        public Entity ExplosionPrefab;
         
         public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
         {
@@ -201,7 +206,7 @@ public class MissileSystem : JobComponentSystem
                     pv.ApplyLinearImpulse(pm, math.mul(rotation, new float3(0, 0, 400f*Dt)));
                 }
                 if (ap.GetRemainTime(Time) < 0f) {
-                    ExplosionSystem.Instantiate(CommandBuffer, chunkIndex /* jobIndex */, translation);
+                    ExplosionSystem.Instantiate(CommandBuffer, chunkIndex /* jobIndex */, translation, ExplosionPrefab, Time);
                 }
             }
         }
@@ -220,6 +225,7 @@ public class MissileSystem : JobComponentSystem
             PhysicsMassType = GetArchetypeChunkComponentType<PhysicsMass>(true /* isReadOnly */),
             MissileType = GetArchetypeChunkComponentType<MissileComponent>(true /* isReadOnly */),
             AlivePeriodType = GetArchetypeChunkComponentType<AlivePeriod>(true /* isReadOnly */),
+            ExplosionPrefab = ExplosionSystem.PrefabEntity,
         };
         handle = job.Schedule(_query, handle);
         _entityCommandBufferSystem.AddJobHandleForProducer(handle);

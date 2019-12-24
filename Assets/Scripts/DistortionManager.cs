@@ -44,30 +44,30 @@ public class DistortionSystem : JobComponentSystem
     RenderDistortionSystem _renderDistortionSystem;
 
 	public static Entity Instantiate(EntityCommandBuffer.Concurrent ecb, int jobIndex,
-                                     Entity prefab, float3 pos, float period, float size)
+                                     Entity prefab, float3 pos, float period, float size, float time)
 	{
 		var entity = ecb.Instantiate(jobIndex, prefab);
-		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = (float)UTJ.Time.GetCurrent(), Period = period, });
+		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = time, Period = period, });
 
         var rot = quaternion.identity;
         var mat = new float4x4(rot, pos);
-        mat.c0.w = UTJ.Time.GetCurrent();
+        mat.c0.w = time;
         mat.c1.w = size;
 		ecb.SetComponent(jobIndex, entity, new DistortionComponent { Matrix = mat, });
         return entity;
     }
 
-	public static Entity Instantiate(EntityManager em, Entity prefab, float3 pos, float period, float size)
+	public static Entity Instantiate(EntityManager em, Entity prefab, float3 pos, float period, float size, float time)
 	{
 		var entity = em.Instantiate(prefab);
 #if UNITY_EDITOR
         em.SetName(entity, "distortion");
 #endif
-		em.SetComponentData(entity, new AlivePeriod { StartTime = (float)UTJ.Time.GetCurrent(), Period = period, });
+		em.SetComponentData(entity, new AlivePeriod { StartTime = time, Period = period, });
 
         var rot = quaternion.identity;
         var mat = new float4x4(rot, pos);
-        mat.c0.w = UTJ.Time.GetCurrent();
+        mat.c0.w = time;
         mat.c1.w = size;
 		em.SetComponentData(entity, new DistortionComponent { Matrix = mat, });
         return entity;

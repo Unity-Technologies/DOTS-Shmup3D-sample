@@ -40,6 +40,12 @@ public class CustomCopyTransformToGameObjectSystem : JobComponentSystem
         _transformList = new System.Collections.Generic.List<UnityEngine.Transform>();
     }
 
+    protected override void OnDestroy()
+    {
+        if (_transformAa.isCreated)
+            _transformAa.Dispose();
+    }        
+
     public void AddTransforms(UnityEngine.Transform[] transforms)
     {
         foreach (var tfm in transforms) {
@@ -56,6 +62,8 @@ public class CustomCopyTransformToGameObjectSystem : JobComponentSystem
     public void RemoveTransform(UnityEngine.Transform transform)
     {
         _transformList.Remove(transform);
+        if (_transformList.Count == 0)
+            _transformAa.Dispose();
     }
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)

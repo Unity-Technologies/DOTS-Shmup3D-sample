@@ -56,20 +56,20 @@ public class SparkSystem : JobComponentSystem
 
 	public static Entity Instantiate(EntityCommandBuffer.Concurrent ecb, int jobIndex,
                                      Entity prefabEntity,
-                                     float3 pos, float3 norm, in Color col)
+                                     float3 pos, float3 norm, in Color col, float time)
 	{
-        return Instantiate(ecb, jobIndex, prefabEntity, pos, norm, Utility.ConvColorBitPattern(in col));
+        return Instantiate(ecb, jobIndex, prefabEntity, pos, norm, Utility.ConvColorBitPattern(in col), time);
     }
     
 	public static Entity Instantiate(EntityCommandBuffer.Concurrent ecb, int jobIndex,
                                      Entity prefabEntity,
-                                     float3 pos, float3 norm, float colorBitPattern)
+                                     float3 pos, float3 norm, float colorBitPattern, float time)
     {
 		var entity = ecb.Instantiate(jobIndex, prefabEntity);
 		ecb.SetComponent(jobIndex, entity, new Translation { Value = pos, });
         var up = new float3(0, 1, 0);
 		ecb.SetComponent(jobIndex, entity, new Rotation { Value = quaternion.LookRotationSafe(norm, up), });
-		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = (float)UTJ.Time.GetCurrent(), Period = 0.5f, });
+		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = time, Period = 0.5f, });
 		ecb.SetComponent(jobIndex, entity, new SparkComponent { ColorBitPattern = colorBitPattern, });
         return entity;
 	}

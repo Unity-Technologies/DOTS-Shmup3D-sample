@@ -89,7 +89,7 @@ public class TrailSystem : JobComponentSystem
         var buffer = ecb.SetBuffer<TrailPoint>(jobIndex, entity);
         for (var i = 0; i < TrailConfig.NodeNum; ++i)
             buffer.Add(new TrailPoint { Position = pos, Time = time, });
-		ecb.SetComponent(jobIndex, entity, AlivePeriod.Create(UTJ.Time.GetCurrent(), TrailConfig.AliveTime));
+		ecb.SetComponent(jobIndex, entity, AlivePeriod.Create(time, TrailConfig.AliveTime));
         return entity;
 	}
 
