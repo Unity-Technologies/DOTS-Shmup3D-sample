@@ -29,7 +29,7 @@ public class TestSystem : JobComponentSystem
     }
 
     // [BurstCompile]
-    public struct Job : IJobChunk
+    public struct MyJob : IJobChunk
     {
         [ReadOnly] public ArchetypeChunkComponentType<Translation> TranslationType;
         
@@ -45,7 +45,7 @@ public class TestSystem : JobComponentSystem
 
 	protected override JobHandle OnUpdate(JobHandle handle)
 	{
-        var job = new Job {
+        var job = new MyJob {
             TranslationType = GetArchetypeChunkComponentType<Translation>(true /* isReadOnly */),
         };
         handle = job.Schedule(m_Query, handle);

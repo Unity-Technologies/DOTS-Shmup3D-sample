@@ -15,7 +15,7 @@ public class AlivePeriodSystem : JobComponentSystem
     }
 
     [BurstCompile]
-	struct Job : IJobForEachWithEntity<AlivePeriod>
+	struct MyJob : IJobForEachWithEntity<AlivePeriod>
 	{
         public EntityCommandBuffer.Concurrent CommandBuffer;
         public float Time;
@@ -33,9 +33,9 @@ public class AlivePeriodSystem : JobComponentSystem
         var commandBuffer = _entityCommandBufferSystem.CreateCommandBuffer().ToConcurrent();
 
         var handle = inputDeps;
-		var job = new Job {
+		var job = new MyJob {
             CommandBuffer = commandBuffer,
-            Time = Time.GetCurrent(),
+            Time = UTJ.Time.GetCurrent(),
         };
 		handle = job.Schedule(this, dependsOn: handle);
         _entityCommandBufferSystem.AddJobHandleForProducer(handle);

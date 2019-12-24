@@ -18,7 +18,7 @@ public class TimeSystem : ComponentSystem
     struct TimeIgniter : IComponentData {}
     public static void Ignite()
     {
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
 		var archeType = em.CreateArchetype(typeof(TimeIgniter));
 		var entity = em.CreateEntity(archeType);
 #if UNITY_EDITOR
@@ -33,7 +33,7 @@ public class TimeSystem : ComponentSystem
 
 	protected override void OnUpdate()
 	{
-        Time.UpdateFrame();
+        UTJ.Time.UpdateFrame();
     }
 }
 

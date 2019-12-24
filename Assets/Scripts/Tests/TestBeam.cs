@@ -17,7 +17,7 @@ public class TestBeam : MonoBehaviour
         for (var i = 0; i < 10; ++i)
         {
             var vel = random_.NextFloat3Direction() * 32f;
-            BeamSystem.Instantiate(World.Active.EntityManager, BeamManager.Prefab, pos, vel);
+            BeamSystem.Instantiate(World.DefaultGameObjectInjectionWorld.EntityManager, BeamManager.Prefab, pos, vel, Time.GetCurrent());
         }
     }
 

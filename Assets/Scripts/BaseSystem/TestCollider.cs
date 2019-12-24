@@ -13,7 +13,7 @@ public class TestCollider : MonoBehaviour
 
     void Start()
     {
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
         EntityArchetype colliderArchetype = em.CreateArchetype(typeof(Translation)
                                                                 , typeof(Rotation)
                                                                 , typeof(PhysicsCollider)
@@ -47,7 +47,7 @@ public class TestCollider : MonoBehaviour
 
     void LateUpdate()
     {
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
         em.SetComponentData(_entity, new Translation { Value = new float3(Mathf.Sin(Time.time)-0.5f, 23.81f, 0.5f), });
     }
 }

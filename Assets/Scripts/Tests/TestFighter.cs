@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
@@ -31,7 +31,7 @@ public class TestFighter : MonoBehaviour
                                                        replay_index);
                 if (first)
                 {
-                    var fighterSystem = World.Active.GetOrCreateSystem<FighterSystem>();
+                    var fighterSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<FighterSystem>();
                     fighterSystem.PrimaryEntity = entity;
                     first = false;
                 }

@@ -47,11 +47,11 @@ public class DistortionSystem : JobComponentSystem
                                      Entity prefab, float3 pos, float period, float size)
 	{
 		var entity = ecb.Instantiate(jobIndex, prefab);
-		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = (float)Time.GetCurrent(), Period = period, });
+		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = (float)UTJ.Time.GetCurrent(), Period = period, });
 
         var rot = quaternion.identity;
         var mat = new float4x4(rot, pos);
-        mat.c0.w = Time.GetCurrent();
+        mat.c0.w = UTJ.Time.GetCurrent();
         mat.c1.w = size;
 		ecb.SetComponent(jobIndex, entity, new DistortionComponent { Matrix = mat, });
         return entity;
@@ -63,11 +63,11 @@ public class DistortionSystem : JobComponentSystem
 #if UNITY_EDITOR
         em.SetName(entity, "distortion");
 #endif
-		em.SetComponentData(entity, new AlivePeriod { StartTime = (float)Time.GetCurrent(), Period = period, });
+		em.SetComponentData(entity, new AlivePeriod { StartTime = (float)UTJ.Time.GetCurrent(), Period = period, });
 
         var rot = quaternion.identity;
         var mat = new float4x4(rot, pos);
-        mat.c0.w = Time.GetCurrent();
+        mat.c0.w = UTJ.Time.GetCurrent();
         mat.c1.w = size;
 		em.SetComponentData(entity, new DistortionComponent { Matrix = mat, });
         return entity;
@@ -90,7 +90,7 @@ public class DistortionSystem : JobComponentSystem
     }
 
     [BurstCompile]
-    struct Job : IJob
+    struct MyJob : IJob
     {
         public float Time;
         [ReadOnly] public ArchetypeChunkComponentType<DistortionComponent> DistortionType;
@@ -115,8 +115,8 @@ public class DistortionSystem : JobComponentSystem
         _batchMatrices.Clear();
 
         var chunkArray = _query.CreateArchetypeChunkArray(Allocator.TempJob);
-        var job = new Job {
-            Time = Time.GetCurrent(),
+        var job = new MyJob {
+            Time = UTJ.Time.GetCurrent(),
             DistortionType = GetArchetypeChunkComponentType<DistortionComponent>(),
             ChunkArray = chunkArray,
             Matrices = _batchMatrices,
@@ -206,7 +206,7 @@ public class RenderDistortionSystem : ComponentSystem
 
 	protected override void OnUpdate()
 	{
-        var currentTime = Time.GetCurrent();
+        var currentTime = UTJ.Time.GetCurrent();
 		_material.SetFloat(MaterialCurrentTime, currentTime);
 
         Sync();

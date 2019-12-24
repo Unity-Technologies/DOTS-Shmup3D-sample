@@ -63,8 +63,8 @@ public class MissileCollisionSystem : JobComponentSystem
     {
     }
 
-    // [BurstCompile]
-    struct Job : IJobChunk
+    [BurstCompile]
+    struct MyJob : IJobChunk
     {
         public EntityCommandBuffer.Concurrent CommandBuffer;
         [ReadOnly] public ArchetypeChunkEntityType EntityType;
@@ -92,7 +92,7 @@ public class MissileCollisionSystem : JobComponentSystem
 	protected override unsafe JobHandle OnUpdate(JobHandle handle)
 	{
         var commandBuffer = _entityCommandBufferSystem.CreateCommandBuffer().ToConcurrent();
-        var job = new Job {
+        var job = new MyJob {
             CommandBuffer = commandBuffer,
             EntityType = GetArchetypeChunkEntityType(),
             TranslationType = GetArchetypeChunkComponentType<Translation>(true /* isReadOnly */),
@@ -111,7 +111,7 @@ public class MissileSystem : JobComponentSystem
 
 	public static Entity Instantiate(Entity prefab, float3 pos, quaternion rot)
 	{
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
 		var entity = em.Instantiate(prefab);
 #if UNITY_EDITOR
         em.SetName(entity, "missile");
@@ -119,7 +119,7 @@ public class MissileSystem : JobComponentSystem
 		em.SetComponentData(entity, new Translation { Value = pos, });
 		em.SetComponentData(entity, new Rotation { Value = rot, });
         em.SetComponentData(entity, new MissileComponent { Target = new float3(0, 0, 0), });
-        em.SetComponentData(entity, AlivePeriod.Create(Time.GetCurrent(), 2f /* period */));
+        em.SetComponentData(entity, AlivePeriod.Create(UTJ.Time.GetCurrent(), 2f /* period */));
         TrailSystem.Instantiate(entity, pos, 0.5f /* width */, Color.white,
                                 new float3(0f, 0f, -0.5f) /* offset */, 4f/60f /* update_interval */);
         return entity;
@@ -162,8 +162,8 @@ public class MissileSystem : JobComponentSystem
     {
     }
 
-    // [BurstCompile]
-    struct Job : IJobChunk
+    [BurstCompile]
+    struct MyJob : IJobChunk
     {
         public EntityCommandBuffer.Concurrent CommandBuffer;
         public float Time;
@@ -210,10 +210,10 @@ public class MissileSystem : JobComponentSystem
 	protected override unsafe JobHandle OnUpdate(JobHandle handle)
 	{
         var commandBuffer = _entityCommandBufferSystem.CreateCommandBuffer().ToConcurrent();
-        var job = new Job {
+        var job = new MyJob {
             CommandBuffer = commandBuffer,
-            Time = Time.GetCurrent(),
-            Dt = Time.GetDt(),
+            Time = UTJ.Time.GetCurrent(),
+            Dt = UTJ.Time.GetDt(),
             TranslationType = GetArchetypeChunkComponentType<Translation>(true /* isReadOnly */),
             RotationType = GetArchetypeChunkComponentType<Rotation>(true /* isReadOnly */),
             PhysicsVelocityType = GetArchetypeChunkComponentType<PhysicsVelocity>(false /* isReadOnly */),

@@ -18,7 +18,7 @@ public class TestTrail : MonoBehaviour
 {
     void Start()
     {
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
         var random = new Random(12345);
         const int NUM = 1023*2;
         var coltbl = new Color[] {

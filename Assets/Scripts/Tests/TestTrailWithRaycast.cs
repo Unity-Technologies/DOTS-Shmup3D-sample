@@ -18,7 +18,7 @@ public class TestTrailWithRaycast : MonoBehaviour
 {
     void Start()
     {
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
         var random = new Random(12345);
         const int NUM = 1023*2;
         var coltbl = new Color[] {
@@ -64,7 +64,7 @@ public class TestTrailRaycastSystem : JobComponentSystem
     }
 
     [BurstCompile]
-    struct Job : IJobChunk
+    struct MyJob : IJobChunk
     {
         public Unity.Physics.CollisionWorld world;
         public RigidTransform transform;
@@ -105,12 +105,12 @@ public class TestTrailRaycastSystem : JobComponentSystem
 
     protected override JobHandle OnUpdate(JobHandle handle)
     {
-        var physicsWorldSystem = World.Active.GetExistingSystem<Unity.Physics.Systems.BuildPhysicsWorld>();
+        var physicsWorldSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystem<Unity.Physics.Systems.BuildPhysicsWorld>();
         var dt = 1f/60f;
         var time = UnityEngine.Time.time;
         var euler = new float3(math.sin(time*2f)*2, math.cos(time*2.4f)*1, math.cos(time)*3) * dt;
         _rot = math.mul(_rot, quaternion.Euler(euler));
-        var job = new Job {
+        var job = new MyJob {
             world = physicsWorldSystem.PhysicsWorld.CollisionWorld,
             transform = new RigidTransform { pos = float3.zero, rot = _rot, },
             RaycasterType = GetArchetypeChunkComponentType<TestTrailRaycasterComponent>(true /* readOnly */),

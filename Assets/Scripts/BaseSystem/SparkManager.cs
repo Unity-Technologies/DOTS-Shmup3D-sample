@@ -69,7 +69,7 @@ public class SparkSystem : JobComponentSystem
 		ecb.SetComponent(jobIndex, entity, new Translation { Value = pos, });
         var up = new float3(0, 1, 0);
 		ecb.SetComponent(jobIndex, entity, new Rotation { Value = quaternion.LookRotationSafe(norm, up), });
-		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = (float)Time.GetCurrent(), Period = 0.5f, });
+		ecb.SetComponent(jobIndex, entity, new AlivePeriod { StartTime = (float)UTJ.Time.GetCurrent(), Period = 0.5f, });
 		ecb.SetComponent(jobIndex, entity, new SparkComponent { ColorBitPattern = colorBitPattern, });
         return entity;
 	}
@@ -94,7 +94,7 @@ public class SparkSystem : JobComponentSystem
     }
 
     [BurstCompile]
-    struct Job : IJob
+    struct MyJob : IJob
     {
         [ReadOnly] public ArchetypeChunkComponentType<Translation> TranslationType;
         [ReadOnly] public ArchetypeChunkComponentType<Rotation> RotationType;
@@ -125,7 +125,7 @@ public class SparkSystem : JobComponentSystem
 	{
         _batchMatrices.Clear();
         var chunkArray = _query.CreateArchetypeChunkArray(Allocator.TempJob);
-        var job = new Job {
+        var job = new MyJob {
             TranslationType = GetArchetypeChunkComponentType<Translation>(),
             RotationType = GetArchetypeChunkComponentType<Rotation>(),
             AlivePeriodType = GetArchetypeChunkComponentType<AlivePeriod>(),
@@ -239,9 +239,9 @@ public class RenderSparkSystem : ComponentSystem
 		}
 
 		var matrix = _prevViewMatrix * _camera.cameraToWorldMatrix; // prev-view * inverted-cur-view
-        var currentTime = Time.GetCurrent();
+        var currentTime = UTJ.Time.GetCurrent();
 		_material.SetFloat(MaterialCurrentTime, currentTime);
-		_material.SetFloat(MaterialPreviousTime, currentTime - Time.GetDt());
+		_material.SetFloat(MaterialPreviousTime, currentTime - UTJ.Time.GetDt());
 		_material.SetMatrix(MaterialPrevInvMatrix, matrix);
         _prevViewMatrix = _camera.worldToCameraMatrix;
         

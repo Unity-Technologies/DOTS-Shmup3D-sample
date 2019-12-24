@@ -47,6 +47,8 @@ public class HexpedManager : MonoBehaviour, IDeclareReferencedPrefabs, IConvertG
 
     void Start()
     {
+        HexpedSystem.Initialize();
+
         const float height = 10f;
         HexpedSystem.Instantiate(new RigidTransform(quaternion.identity, new float3(-64, height, 0)),
                                  _prefabEntityBody,
@@ -75,15 +77,19 @@ public class HexpedSystem : JobComponentSystem
 {
     static HexpedData _data;
 
+    public static void Initialize()
+    {
+        _data = HexpedData.Create();
+    }
+
 	public static void Instantiate(RigidTransform transform,
                                    Entity prefabEntityBody,
                                    Entity prefabEntityGroin,
                                    Entity prefabEntityThigh,
                                    Entity prefabEntityShin)
 	{
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
         var hexped = new Hexped();
-        _data = HexpedData.Create();
         hexped.Initialize(in _data,
                           em,
                           transform,
@@ -92,7 +98,6 @@ public class HexpedSystem : JobComponentSystem
                           prefabEntityThigh,
                           prefabEntityShin);
         hexped.ApplyTransform(em);
-        // hexped.createJoints(em);
     }
 
     BuildPhysicsWorld _buildPhysicsWorldSystem;
@@ -118,7 +123,7 @@ public class HexpedSystem : JobComponentSystem
     }
 
     [BurstCompile]
-    struct Job : IJobChunk
+    struct MyJob : IJobChunk
     {
 		public float Dt;
         public CollisionWorld CollisionWorld;
@@ -210,8 +215,8 @@ public class HexpedSystem : JobComponentSystem
 
     protected override JobHandle OnUpdate(JobHandle handle)
     {
-        var job = new Job {
-			Dt = Time.GetDt(),
+        var job = new MyJob {
+			Dt = UTJ.Time.GetDt(),
             CollisionWorld = _buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
             Data = _data,
 			ControllerUnit = _controllerDevice.Update(),
@@ -242,6 +247,7 @@ public class HexpedSystem : JobComponentSystem
         handle = transformShinJob.Schedule(this, handle);
 
 		_collisionSystem.AddDependingJobHandle(handle);
+        handle.Complete();
 
         return handle;
     }

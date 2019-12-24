@@ -34,7 +34,7 @@ public class GroundHeightSystem : JobComponentSystem
     }
 
     [BurstCompile]
-    struct Job : IJobChunk
+    struct MyJob : IJobChunk
     {
         [ReadOnly] public CollisionWorld MCollisionWorld;
         [ReadOnly] public ArchetypeChunkComponentType<Translation> TranslationType;
@@ -64,7 +64,7 @@ public class GroundHeightSystem : JobComponentSystem
 
 	protected override JobHandle OnUpdate(JobHandle handle)
 	{
-        var job = new Job {
+        var job = new MyJob {
             MCollisionWorld = _buildPhysicsWorldSystem.PhysicsWorld.CollisionWorld,
             TranslationType = GetArchetypeChunkComponentType<Translation>(true /* isReadOnly */),
             RotationType = GetArchetypeChunkComponentType<Rotation>(true /* isReadOnly */),

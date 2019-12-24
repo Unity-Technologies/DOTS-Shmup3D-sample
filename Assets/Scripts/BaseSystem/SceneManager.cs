@@ -36,7 +36,7 @@ public class SceneManager : MonoBehaviour
 
     public static void CleanUpEntities()
     {
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
         var entities = em.GetAllEntities();
         for (var i = 0; i < entities.Length; ++i)
         {

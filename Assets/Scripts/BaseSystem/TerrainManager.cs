@@ -45,7 +45,7 @@ public class TerrainSystem : ComponentSystem
 {
 	public static Entity Instantiate(Entity prefab)
 	{
-        var entityManager = World.Active.EntityManager;
+        var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 		var entity = entityManager.Instantiate(prefab);
         return entity;
     }

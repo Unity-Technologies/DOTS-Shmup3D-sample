@@ -56,7 +56,7 @@ public class TrailSystem : JobComponentSystem
 	public static Entity Instantiate(Entity referingEntity, float3 pos, float width, Color color, float3 offset,
                                      float updateInterval = 1f/60f)
 	{
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
 		var entity = em.Instantiate(_prefabEntity);
 #if UNITY_EDITOR
         em.SetName(entity, "trail");
@@ -72,7 +72,7 @@ public class TrailSystem : JobComponentSystem
         var buffer = em.GetBuffer<TrailPoint>(entity);
         for (var i = 0; i < TrailConfig.NodeNum; ++i)
             buffer.Add(new TrailPoint { Position = pos, Time = 0, });
-		em.SetComponentData(entity, AlivePeriod.Create(Time.GetCurrent(), TrailConfig.AliveTime));
+		em.SetComponentData(entity, AlivePeriod.Create(UTJ.Time.GetCurrent(), TrailConfig.AliveTime));
         return entity;
 	}
 
@@ -89,7 +89,7 @@ public class TrailSystem : JobComponentSystem
         var buffer = ecb.SetBuffer<TrailPoint>(jobIndex, entity);
         for (var i = 0; i < TrailConfig.NodeNum; ++i)
             buffer.Add(new TrailPoint { Position = pos, Time = time, });
-		ecb.SetComponent(jobIndex, entity, AlivePeriod.Create(Time.GetCurrent(), TrailConfig.AliveTime));
+		ecb.SetComponent(jobIndex, entity, AlivePeriod.Create(UTJ.Time.GetCurrent(), TrailConfig.AliveTime));
         return entity;
 	}
 
@@ -111,7 +111,7 @@ public class TrailSystem : JobComponentSystem
         _batchMatrices.Dispose();
     }
 
-    struct Job : IJob
+    struct MyJob : IJob
     {
         public float Time;
         [ReadOnly] public ComponentDataFromEntity<Translation> TranslationsFromEntity;
@@ -188,8 +188,8 @@ public class TrailSystem : JobComponentSystem
 
         var chunkArray = _query.CreateArchetypeChunkArray(Allocator.TempJob, out var gatherJobHandle);
         handle = JobHandle.CombineDependencies(gatherJobHandle, handle);
-        var job = new Job {
-            Time = Time.GetCurrent(),
+        var job = new MyJob {
+            Time = UTJ.Time.GetCurrent(),
             TranslationsFromEntity = GetComponentDataFromEntity<Translation>(true /* isReadOnly */),
             RotationsFromEntity = GetComponentDataFromEntity<Rotation>(true /* isReadOnly */),
             MTrailComponentType = GetArchetypeChunkComponentType<TrailComponent>(false /* isReadOnly */),
@@ -306,7 +306,7 @@ public class RenderTrailSystem : ComponentSystem
         Sync();
         var batchMatrices = _trailSystem.BatchMatrices;
         int num = batchMatrices.Length;
-        var currentTime = Time.GetCurrent();
+        var currentTime = UTJ.Time.GetCurrent();
 		_material.SetFloat(MaterialCurrentTime, currentTime);
         var trailBuffer = _trailSystem.TrailBuffer;
         _trailCbuffer.SetData(trailBuffer, 0 /* managedBufferStartIndex */, 0 /* computeBufferStartIndex */, num * TrailConfig.NodeNum);

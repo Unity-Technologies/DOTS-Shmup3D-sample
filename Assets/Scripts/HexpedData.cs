@@ -85,6 +85,7 @@ public struct HexpedData : IDisposable
     public void Dispose()
     {
         RegularPoint.Dispose();
+        WayPointList.Dispose();
         GroinPositions.Dispose();
         GroinRotations.Dispose();
         GroinYaws.Dispose();

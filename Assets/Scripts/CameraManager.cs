@@ -55,9 +55,9 @@ public class CameraSystem : JobComponentSystem
                                      float3 pos,
                                      quaternion rot)
 	{
-        var customCopyTransformToGameObjectSystem = World.Active.GetOrCreateSystem<CustomCopyTransformToGameObjectSystem>();
+        var customCopyTransformToGameObjectSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<CustomCopyTransformToGameObjectSystem>();
         customCopyTransformToGameObjectSystem.AddTransform(transform);
-        var em = World.Active.EntityManager;
+        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
 		var entity = em.Instantiate(prefab);
 #if UNITY_EDITOR
         em.SetName(entity, "camera");
@@ -69,8 +69,11 @@ public class CameraSystem : JobComponentSystem
 
     public static void DestroyTransform(UnityEngine.Transform transform)
     {
-        var customCopyTransformToGameObjectSystem = World.Active.GetOrCreateSystem<CustomCopyTransformToGameObjectSystem>();
-        customCopyTransformToGameObjectSystem.RemoveTransform(transform);
+        if (World.DefaultGameObjectInjectionWorld != null)
+        {
+            var customCopyTransformToGameObjectSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<CustomCopyTransformToGameObjectSystem>();
+            customCopyTransformToGameObjectSystem.RemoveTransform(transform);
+        }
     }
 
     protected override void OnCreate()
@@ -88,7 +91,7 @@ public class CameraSystem : JobComponentSystem
     }
 
     [BurstCompile]
-    struct Job : IJobChunk
+    struct MyJob : IJobChunk
     {
         public CameraParameter Param;
         public float Dt;
@@ -155,10 +158,10 @@ public class CameraSystem : JobComponentSystem
             return handle;
         }
             
-        var job = new Job {
+        var job = new MyJob {
             Param = ParameterManager.Parameter.CameraParmeter,
             TargetEntity = _fighterSystem.PrimaryEntity,
-            Dt = Time.GetDt(),
+            Dt = UTJ.Time.GetDt(),
             Transforms = GetComponentDataFromEntity<Translation>(true /* readOnly */),
             Rotations = GetComponentDataFromEntity<Rotation>(true /* readOnly */),
             TranslationType = GetArchetypeChunkComponentType<Translation>(true /* isReadOnly */),
